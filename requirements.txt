@@ -1,0 +1,8 @@
+fastapi
+uvicorn
+sqlalchemy
+databases
+pydantic[dotenv]
+python-multipart
+aiosmtplib  # Para envío de correos
+mysql-connector-python
