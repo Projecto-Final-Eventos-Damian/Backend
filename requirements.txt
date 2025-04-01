@@ -1,8 +1,9 @@
 fastapi
 uvicorn
 sqlalchemy
-databases
+pymysql
 pydantic[dotenv]
 python-multipart
-aiosmtplib  # Para envío de correos
-mysql-connector-python
+aiosmtplib
+email-validator
+cryptography
