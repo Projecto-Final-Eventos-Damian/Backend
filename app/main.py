@@ -15,9 +15,9 @@ async def general_exception_handler(request, exc: Exception):
         }
     )
 
-# Registrar las rutas de usuarios
-app.include_router(users.router, prefix="/users", tags=["users"])
-
 @app.get("/")
 def read_root():
     return {"message": "Hello, this is FastAPI!"}
+
+# Registrar las rutas de usuarios
+app.include_router(users.router, prefix="/users", tags=["users"])

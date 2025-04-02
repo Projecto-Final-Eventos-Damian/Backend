@@ -2,6 +2,7 @@ from pydantic import BaseModel, EmailStr
 from datetime import datetime
 from enum import Enum
 
+# Esquema para los diferentes roles de los usuarios
 class UserRole(str, Enum):
     user = "user"
     organizer = "organizer"
@@ -19,7 +20,7 @@ class User(BaseModel):
     id: int
     name: str
     email: EmailStr
-    role: UserRole  # Utilizamos el Enum para el role
+    role: UserRole
     created_at: datetime
 
     class Config:
