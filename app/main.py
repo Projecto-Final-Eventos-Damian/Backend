@@ -1,5 +1,5 @@
 from fastapi import FastAPI, HTTPException
-from app.routes import users
+from app.routes import users, categories
 from fastapi.responses import JSONResponse
 
 app = FastAPI(title="Gestión de Eventos")
@@ -21,3 +21,4 @@ def read_root():
 
 # Registrar las rutas de usuarios
 app.include_router(users.router, prefix="/users", tags=["users"])
+app.include_router(categories.router, prefix="/categories", tags=["categories"])

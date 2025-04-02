@@ -21,7 +21,6 @@ class User(BaseModel):
     name: str
     email: EmailStr
     role: UserRole
-    created_at: datetime
 
     class Config:
         from_attributes = True  # Esto permite que el modelo ORM de SQLAlchemy sea convertido a dict para respuestas
