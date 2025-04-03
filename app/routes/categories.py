@@ -3,7 +3,10 @@ from sqlalchemy.orm import Session
 from app import schemas, crud
 from app.database import get_db
 
-router = APIRouter()
+router = APIRouter(
+    prefix="/categories",
+    tags=["categories"]
+)
 
 # Crear una nueva categoría
 @router.post("/", response_model=schemas.Category)
