@@ -1,9 +1,16 @@
+import bcrypt
 from sqlalchemy.orm import Session
 from app import models, schemas
 
+def hash_password(password: str) -> str:
+    salt = bcrypt.gensalt()
+    return bcrypt.hashpw(password.encode("utf-8"), salt).decode("utf-8")
+
+def verify_password(plain_password: str, hashed_password: str) -> bool:
+    return bcrypt.checkpw(plain_password.encode("utf-8"), hashed_password.encode("utf-8"))
+
 def create_user(db: Session, user: schemas.UserCreate):
-    # Hasheamos la contraseña (reemplazar esto con un proceso real de hash)
-    hashed_password = user.password  # Aquí deberías hashear la contraseña
+    hashed_password = hash_password(user.password)
     db_user = models.User(
         name=user.name, 
         email=user.email, 
@@ -26,7 +33,8 @@ def update_user(db: Session, user_id: int, user: schemas.UserCreate):
     if db_user:
         db_user.name = user.name
         db_user.email = user.email
-        db_user.password_hash = user.password  # Aquí deberías encriptar la contraseña
+        if user.password:
+            db_user.password_hash = hash_password(user.password)
         db_user.role = user.role.value
         db.commit()
         db.refresh(db_user)
