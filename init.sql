@@ -27,7 +27,8 @@ CREATE TABLE IF NOT EXISTS events (
     category_id INT NOT NULL,
     organizer_id INT NOT NULL,
     capacity INT NOT NULL,
-    date_time DATETIME NOT NULL,
+    start_date_time DATETIME NOT NULL,
+    end_date_time DATETIME NOT NULL,
     location VARCHAR(255) NOT NULL,
     image_url VARCHAR(255),
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
@@ -43,6 +44,18 @@ CREATE TABLE IF NOT EXISTS reservations (
     status ENUM('pending', 'confirmed', 'cancelled') DEFAULT 'pending',
     FOREIGN KEY (user_id) REFERENCES users(id),
     FOREIGN KEY (event_id) REFERENCES events(id)
+);
+
+CREATE TABLE IF NOT EXISTS tickets (
+    id INT PRIMARY KEY AUTO_INCREMENT,
+    reservation_id INT NOT NULL,
+    event_id INT NOT NULL,
+    ticket_code VARCHAR(50) UNIQUE NOT NULL,
+    assigned_to VARCHAR(255) NULL,
+    status ENUM('valid', 'used', 'cancelled') DEFAULT 'valid',
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    FOREIGN KEY (reservation_id) REFERENCES reservations(id) ON DELETE CASCADE,
+    FOREIGN KEY (event_id) REFERENCES events(id) ON DELETE CASCADE
 );
 
 CREATE TABLE IF NOT EXISTS event_ratings (

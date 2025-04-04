@@ -8,7 +8,8 @@ def create_event(db: Session, event: schemas.EventCreate):
         category_id=event.category_id,
         organizer_id=event.organizer_id,
         capacity=event.capacity,
-        date_time=event.date_time,
+        start_date_time=event.start_date_time,
+        end_date_time=event.end_date_time,
         location=event.location,
         image_url=str(event.image_url) if event.image_url else None
     )
@@ -31,7 +32,8 @@ def update_event(db: Session, event_id: int, event: schemas.EventCreate):
         db_event.category_id = event.category_id
         db_event.organizer_id = event.organizer_id
         db_event.capacity = event.capacity
-        db_event.date_time = event.date_time
+        db_event.start_date_time = event.start_date_time
+        db_event.end_date_time = event.end_date_time
         db_event.location = event.location
         db_event.image_url = str(event.image_url) if event.image_url else None
         db.commit()

@@ -12,11 +12,11 @@ class Event(Base):
     category_id = Column(Integer, ForeignKey("categories.id"), nullable=False)
     organizer_id = Column(Integer, ForeignKey("users.id"), nullable=False)
     capacity = Column(Integer, nullable=False)
-    date_time = Column(DateTime, nullable=False)
+    start_date_time = Column(DateTime, nullable=False)
+    end_date_time = Column(DateTime, nullable=False)
     location = Column(String(255), nullable=False)
     image_url = Column(String(255), nullable=True)
     created_at = Column(TIMESTAMP, server_default=func.current_timestamp())
 
-    # Relaciones (opcional si quieres acceder directamente a la categoría y organizador)
     category = relationship("Category", back_populates="events")
     organizer = relationship("User", back_populates="events")

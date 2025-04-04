@@ -9,9 +9,10 @@ class EventCreate(BaseModel):
     category_id: int
     organizer_id: int
     capacity: int
-    date_time: datetime
+    start_date_time: datetime
+    end_date_time: datetime
     location: str
-    image_url: Optional[HttpUrl] = None  # Usa HttpUrl para validar URLs
+    image_url: Optional[HttpUrl] = None
 
 class Event(BaseModel):
     id: int
@@ -20,9 +21,10 @@ class Event(BaseModel):
     category: schemas.Category
     organizer: schemas.User
     capacity: int
-    date_time: datetime
+    start_date_time: datetime
+    end_date_time: datetime
     location: str
-    image_url: Optional[HttpUrl] = None  # Usa HttpUrl para validar URLs
+    image_url: Optional[HttpUrl] = None
 
     class Config:
-        from_attributes = True  # Permite la conversión desde un modelo SQLAlchemy
+        from_attributes = True
