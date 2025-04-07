@@ -1,5 +1,5 @@
 from fastapi import FastAPI, HTTPException
-from app.routes import users, categories, events, followers
+from app.routes import users, categories, events, followers, ratings
 from fastapi.responses import JSONResponse
 
 app = FastAPI(title="Gestión de Eventos")
@@ -17,10 +17,11 @@ async def general_exception_handler(request, exc: Exception):
 
 @app.get("/")
 def read_root():
-    return {"message": "Hello, this is FastAPI!"}
+    return {"message": "Hello, this is EventMix Api!"}
 
 # Registrar las rutas de usuarios
 app.include_router(users.router)
 app.include_router(categories.router)
 app.include_router(events.router)
 app.include_router(followers.router)
+app.include_router(ratings.router)

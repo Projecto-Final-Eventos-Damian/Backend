@@ -62,9 +62,10 @@ CREATE TABLE IF NOT EXISTS event_ratings (
     id INT PRIMARY KEY AUTO_INCREMENT,
     user_id INT NOT NULL,
     event_id INT NOT NULL,
-    rating ENUM('1', '2', '3', '4', '5') NOT NULL,
+    rating TINYINT UNSIGNED NOT NULL CHECK (rating BETWEEN 1 AND 5),
     review TEXT,
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    UNIQUE (user_id, event_id),
     FOREIGN KEY (user_id) REFERENCES users(id),
     FOREIGN KEY (event_id) REFERENCES events(id)
 );
@@ -88,4 +89,33 @@ CREATE TABLE IF NOT EXISTS user_followers (
     UNIQUE (user_id, organizer_id),
     FOREIGN KEY (user_id) REFERENCES users(id),
     FOREIGN KEY (organizer_id) REFERENCES users(id)
+);
+
+-- Usuarios
+INSERT INTO users (id, name, email, password_hash, role) VALUES
+(1, 'Organizador1', 'org1@example.com', '1234', 'organizer'),
+(2, 'Organizador2', 'org2@example.com', '1234', 'organizer'),
+(4, 'User1', 'user1@example.com', '1234', 'user'),
+(5, 'User2', 'user2@example.com', '1234', 'user'),
+(6, 'User3', 'user3@example.com', '1234', 'user');
+
+-- Categorías
+INSERT INTO categories (id, name, description) VALUES
+(1, 'Fiesta', NULL),
+(2, 'Deporte', 'ejercicios al aire libre');
+
+-- Evento
+INSERT INTO events (
+    title, description, category_id, organizer_id, capacity,
+    start_date_time, end_date_time, location, image_url
+) VALUES (
+    'Fiesta en Alcoy',
+    'Fiesta temática en Alcoy sobre moros y cristianos',
+    1,
+    1,
+    100,
+    '2025-04-04 16:22:22',
+    '2025-04-04 23:22:22',
+    'Alcoy',
+    'https://example.com/'
 );

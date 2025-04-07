@@ -20,3 +20,4 @@ class Event(Base):
 
     category = relationship("Category", back_populates="events")
     organizer = relationship("User", back_populates="events")
+    ratings = relationship("EventRating", back_populates="event")

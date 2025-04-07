@@ -14,3 +14,4 @@ class User(Base):
     created_at = Column(TIMESTAMP, server_default=func.current_timestamp())
 
     events = relationship("Event", back_populates="organizer")
+    ratings = relationship("EventRating", back_populates="user")
