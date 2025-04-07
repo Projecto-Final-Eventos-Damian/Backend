@@ -1,4 +1,4 @@
-from pydantic import BaseModel, HttpUrl
+from pydantic import BaseModel
 from datetime import datetime
 from typing import Optional
 from app import schemas
@@ -12,7 +12,7 @@ class EventCreate(BaseModel):
     start_date_time: datetime
     end_date_time: datetime
     location: str
-    image_url: Optional[HttpUrl] = None
+    image_url: Optional[str] = None
 
 class Event(BaseModel):
     id: int
@@ -24,7 +24,7 @@ class Event(BaseModel):
     start_date_time: datetime
     end_date_time: datetime
     location: str
-    image_url: Optional[HttpUrl] = None
+    image_url: Optional[str] = None
 
     class Config:
         from_attributes = True

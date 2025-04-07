@@ -15,3 +15,4 @@ class User(Base):
 
     events = relationship("Event", back_populates="organizer")
     ratings = relationship("EventRating", back_populates="user")
+    reservations = relationship("Reservation", back_populates="user")

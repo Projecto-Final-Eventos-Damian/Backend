@@ -40,8 +40,9 @@ CREATE TABLE IF NOT EXISTS reservations (
     id INT PRIMARY KEY AUTO_INCREMENT,
     user_id INT NOT NULL,
     event_id INT NOT NULL,
-    reserved_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     status ENUM('pending', 'confirmed', 'cancelled') DEFAULT 'pending',
+    tickets_number INT NOT NULL,
+    reserved_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     FOREIGN KEY (user_id) REFERENCES users(id),
     FOREIGN KEY (event_id) REFERENCES events(id)
 );
