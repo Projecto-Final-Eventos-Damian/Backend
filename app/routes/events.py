@@ -11,7 +11,13 @@ router = APIRouter(
 # Crear un nuevo evento
 @router.post("/", response_model=schemas.Event)
 def create_event(event: schemas.EventCreate, db: Session = Depends(get_db)):
-    return crud.create_event(db=db, event=event)
+    new_event = crud.create_event(db=db, event=event)
+    if not new_event:
+        raise HTTPException(
+            status_code=400, 
+            detail="Solo los usuarios con rol de organizador pueden crear eventos"
+        )
+    return new_event
 
 # Obtener todos los eventos con paginación
 @router.get("/", response_model=list[schemas.Event])

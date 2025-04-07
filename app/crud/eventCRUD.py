@@ -2,6 +2,14 @@ from sqlalchemy.orm import Session
 from app import models, schemas
 
 def create_event(db: Session, event: schemas.EventCreate):
+    organizer = db.query(models.User).filter(
+        models.User.id == event.organizer_id,
+        models.User.role == "organizer"
+    ).first()
+
+    if not organizer:
+        return None 
+
     db_event = models.Event(
         title=event.title,
         description=event.description,
@@ -17,6 +25,7 @@ def create_event(db: Session, event: schemas.EventCreate):
     db.commit()
     db.refresh(db_event)
     return db_event
+
 
 def get_events(db: Session):
     return db.query(models.Event).all()
