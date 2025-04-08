@@ -1,5 +1,4 @@
-from pydantic import BaseModel
-from typing import Optional
+from pydantic import BaseModel, conint
 from datetime import datetime
 from app import schemas
 from enum import Enum
@@ -13,18 +12,17 @@ class ReservationCreate(BaseModel):
     user_id: int
     event_id: int
     status: ReservationStatus = ReservationStatus.pending
-    tickets_number: int
+    tickets_number: conint(ge=1)
 
 class ReservationUpdate(BaseModel):
     status: ReservationStatus
-    tickets_number: int
 
 class Reservation(BaseModel):
     id: int
     user: schemas.User
     event: schemas.Event
     status: ReservationStatus
-    tickets_number: int
+    tickets_number: conint(ge=1)
 
     class Config:
         from_attributes = True

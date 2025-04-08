@@ -29,7 +29,6 @@ def update_reservation(db: Session, reservation_id: int, reservation: schemas.Re
     db_reservation = db.query(models.Reservation).filter(models.Reservation.id == reservation_id).first()
     if db_reservation:
         db_reservation.status = reservation.status
-        db_reservation.tickets_number = reservation.tickets_number
         db.commit()
         db.refresh(db_reservation)
         return db_reservation

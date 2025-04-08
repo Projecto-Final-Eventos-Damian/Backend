@@ -4,3 +4,4 @@ from .eventSchema import EventCreate, Event
 from .followerSchema import UserFollowerCreate, UserFollower
 from .ratingSchema import EventRatingCreate, EventRatingUpdate, EventRating
 from .reservationSchema import ReservationCreate, ReservationUpdate, Reservation
+from .ticketSchema import TicketCreate, TicketUpdate, Ticket

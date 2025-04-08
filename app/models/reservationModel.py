@@ -15,3 +15,4 @@ class Reservation(Base):
 
     user = relationship("User", back_populates="reservations")
     event = relationship("Event", back_populates="reservations")
+    tickets = relationship("Ticket", back_populates="reservation", cascade="all, delete-orphan")

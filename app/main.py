@@ -1,5 +1,5 @@
 from fastapi import FastAPI, HTTPException
-from app.routes import users, categories, events, followers, ratings, reservations
+from app.routes import users, categories, events, followers, ratings, reservations, tickets
 from fastapi.responses import JSONResponse
 
 app = FastAPI(title="Gestión de Eventos")
@@ -26,3 +26,4 @@ app.include_router(events.router)
 app.include_router(followers.router)
 app.include_router(ratings.router)
 app.include_router(reservations.router)
+app.include_router(tickets.router)

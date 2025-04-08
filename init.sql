@@ -50,13 +50,11 @@ CREATE TABLE IF NOT EXISTS reservations (
 CREATE TABLE IF NOT EXISTS tickets (
     id INT PRIMARY KEY AUTO_INCREMENT,
     reservation_id INT NOT NULL,
-    event_id INT NOT NULL,
     ticket_code VARCHAR(50) UNIQUE NOT NULL,
-    assigned_to VARCHAR(255) NULL,
+    price DECIMAL(10, 2) NOT NULL,
     status ENUM('valid', 'used', 'cancelled') DEFAULT 'valid',
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-    FOREIGN KEY (reservation_id) REFERENCES reservations(id) ON DELETE CASCADE,
-    FOREIGN KEY (event_id) REFERENCES events(id) ON DELETE CASCADE
+    FOREIGN KEY (reservation_id) REFERENCES reservations(id) ON DELETE CASCADE
 );
 
 CREATE TABLE IF NOT EXISTS event_ratings (
