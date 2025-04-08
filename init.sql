@@ -92,11 +92,11 @@ CREATE TABLE IF NOT EXISTS user_followers (
 
 -- Usuarios
 INSERT INTO users (id, name, email, password_hash, role) VALUES
-(1, 'Organizador1', 'org1@example.com', '1234', 'organizer'),
-(2, 'Organizador2', 'org2@example.com', '1234', 'organizer'),
-(4, 'User1', 'user1@example.com', '1234', 'user'),
-(5, 'User2', 'user2@example.com', '1234', 'user'),
-(6, 'User3', 'user3@example.com', '1234', 'user');
+(1, 'Organizador1', 'org1@example.com', '$2b$12$R6AgBSkyZT03C9XAxX.LoeRtCQYNZEnzYaltcFrbB89qEDCJXRM8C', 'organizer'),
+(2, 'Organizador2', 'org2@example.com', '$2b$12$gl0tt4nhct5XH.MftrwlwOYzYpWpIPFQwSXSc.cE1mCz/7ZzPyDrK', 'organizer'),
+(4, 'User1', 'user1@example.com', '$2b$12$uf.ayV1TqhW.cvsY0Ih.JuLsW8ToFqvmsIVfhtlX7yOOYHdP5kjJ.', 'user'),
+(5, 'User2', 'user2@example.com', '$2b$12$GpJMy37Sxpo6byuL6KrNre2TME7JP/bB3PwUp7GFlucYYF52kMLPO', 'user'),
+(6, 'User3', 'user3@example.com', '$2b$12$Q.xHuhU.4WPf1B0xTMw/LODe8cLHnAT1KKnii5goeSe12LY8YYozy', 'user');
 
 -- Categorías
 INSERT INTO categories (id, name, description) VALUES

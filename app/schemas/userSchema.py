@@ -15,6 +15,10 @@ class UserCreate(BaseModel):
     password: str
     role: UserRole = UserRole.user  # Por defecto, el rol es "user"
 
+class UserLogin(BaseModel):
+    email: EmailStr
+    password: str
+
 # Esquema para el usuario en las respuestas (como la información que se devuelve)
 class User(BaseModel):
     id: int
