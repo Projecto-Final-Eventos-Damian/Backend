@@ -2,10 +2,12 @@ from fastapi import APIRouter, Depends, HTTPException
 from sqlalchemy.orm import Session
 from app import models, schemas, crud
 from app.database import get_db
+from app.auth.auth_bearer import JWTBearer
 
 router = APIRouter(
     prefix="/events",
-    tags=["events"]
+    tags=["events"],
+    dependencies=[Depends(JWTBearer())]
 )
 
 # Crear un nuevo evento

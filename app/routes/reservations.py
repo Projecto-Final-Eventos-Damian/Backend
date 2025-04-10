@@ -1,11 +1,13 @@
 from fastapi import APIRouter, Depends, HTTPException
 from sqlalchemy.orm import Session
-from app import schemas, crud, models
+from app import models, schemas, crud
 from app.database import get_db
+from app.auth.auth_bearer import JWTBearer
 
 router = APIRouter(
     prefix="/reservations",
-    tags=["reservations"]
+    tags=["reservations"],
+    dependencies=[Depends(JWTBearer())]
 )
 
 # Crear una nueva reserva

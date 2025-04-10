@@ -1,11 +1,13 @@
 from fastapi import APIRouter, Depends, HTTPException
 from sqlalchemy.orm import Session
-from app import schemas, crud, models
+from app import models, schemas, crud
 from app.database import get_db
+from app.auth.auth_bearer import JWTBearer
 
 router = APIRouter(
     prefix="/tickets",
-    tags=["tickets"]
+    tags=["tickets"],
+    dependencies=[Depends(JWTBearer())]
 )
 
 @router.post("/", response_model=schemas.Ticket)

@@ -1,11 +1,13 @@
 from fastapi import APIRouter, Depends, HTTPException
 from sqlalchemy.orm import Session
-from app import schemas, crud
+from app import models, schemas, crud
 from app.database import get_db
+from app.auth.auth_bearer import JWTBearer
 
 router = APIRouter(
     prefix="/categories",
-    tags=["categories"]
+    tags=["categories"],
+    dependencies=[Depends(JWTBearer())]
 )
 
 # Crear una nueva categoría
