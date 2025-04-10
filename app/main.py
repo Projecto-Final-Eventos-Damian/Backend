@@ -1,8 +1,18 @@
 from fastapi import FastAPI, HTTPException
 from app.routes import users, categories, events, followers, ratings, reservations, tickets, auth
 from fastapi.responses import JSONResponse
+from fastapi.middleware.cors import CORSMiddleware
 
 app = FastAPI(title="Gestión de Eventos")
+
+# Habilitar CORS en FastAPI
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=["http://localhost:3000"],
+    allow_credentials=True,
+    allow_methods=["*"],
+    allow_headers=["*"],
+)
 
 # Manejador de excepciones generales (errores internos)
 @app.exception_handler(Exception)
