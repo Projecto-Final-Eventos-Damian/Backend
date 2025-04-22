@@ -22,3 +22,4 @@ class Event(Base):
     organizer = relationship("User", back_populates="events")
     ratings = relationship("EventRating", back_populates="event")
     reservations = relationship("Reservation", back_populates="event")
+    ticket_types = relationship("TicketType", back_populates="event")

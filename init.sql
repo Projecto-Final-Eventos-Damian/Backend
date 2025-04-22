@@ -47,13 +47,24 @@ CREATE TABLE IF NOT EXISTS reservations (
     FOREIGN KEY (event_id) REFERENCES events(id)
 );
 
+CREATE TABLE IF NOT EXISTS ticket_types (
+    id INT PRIMARY KEY AUTO_INCREMENT,
+    event_id INT NOT NULL,
+    name VARCHAR(100) NOT NULL,
+    description TEXT,
+    price DECIMAL(10, 2) NOT NULL,
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    FOREIGN KEY (event_id) REFERENCES events(id) ON DELETE CASCADE
+);
+
 CREATE TABLE IF NOT EXISTS tickets (
     id INT PRIMARY KEY AUTO_INCREMENT,
     reservation_id INT NOT NULL,
+    ticket_type_id INT NOT NULL,
     ticket_code VARCHAR(50) UNIQUE NOT NULL,
-    price DECIMAL(10, 2) NOT NULL,
     status ENUM('valid', 'used', 'cancelled') DEFAULT 'valid',
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    FOREIGN KEY (ticket_type_id) REFERENCES ticket_types(id),
     FOREIGN KEY (reservation_id) REFERENCES reservations(id) ON DELETE CASCADE
 );
 

@@ -13,8 +13,9 @@ def create_ticket(db: Session, ticket: schemas.TicketCreate) -> models.Ticket:
     code = generate_unique_ticket_code(db)
     db_ticket = models.Ticket(
         reservation_id=ticket.reservation_id,
+        ticket_type_id=ticket.ticket_type_id,
         ticket_code=code,
-        price=ticket.price
+        status=ticket.status
     )
     db.add(db_ticket)
     db.commit()

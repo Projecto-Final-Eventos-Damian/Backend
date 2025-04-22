@@ -1,6 +1,6 @@
-from pydantic import BaseModel, condecimal
+from pydantic import BaseModel
 from datetime import datetime
-from app import schemas
+from app.schemas import Reservation, TicketType
 from enum import Enum
 
 class TicketStatus(str, Enum):
@@ -10,7 +10,7 @@ class TicketStatus(str, Enum):
 
 class TicketCreate(BaseModel):
     reservation_id: int
-    price: condecimal(max_digits=10, decimal_places=2)
+    ticket_type_id: int
     status: TicketStatus = TicketStatus.valid
 
 class TicketUpdate(BaseModel):
@@ -18,9 +18,9 @@ class TicketUpdate(BaseModel):
 
 class Ticket(BaseModel):
     id: int
-    reservation: schemas.Reservation
+    reservation: Reservation
+    ticket_type: TicketType
     ticket_code: str
-    price: condecimal(max_digits=10, decimal_places=2)
     status: TicketStatus
 
     class Config:

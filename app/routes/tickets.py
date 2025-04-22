@@ -37,8 +37,13 @@ def delete_ticket(ticket_id: int, db: Session = Depends(get_db)):
     ticket = db.query(models.Ticket).filter(models.Ticket.id == ticket_id).first()
     if not ticket:
         raise HTTPException(status_code=404, detail="Ticket not found")
-    reservation = ticket.reservation
+    reservation_exists = db.query(models.Reservation).filter(models.Reservation.id == ticket.reservation_id).first()
+    if reservation_exists:
+        raise HTTPException(
+            status_code=400,
+            detail="No se puede eliminar el ticket porque la reserva asociada aún existe"
+        )
+    ticket_data = schemas.Ticket.from_orm(ticket)
     db.delete(ticket)
     db.commit()
-    ticket_data = schemas.Ticket.from_orm(ticket)
     return ticket_data
