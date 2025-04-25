@@ -7,11 +7,15 @@ from app.auth.auth_bearer import JWTBearer
 router = APIRouter(
     prefix="/events",
     tags=["events"],
-    dependencies=[Depends(JWTBearer())]
 )
 
+# Listar todos los eventos
+@router.get("/", response_model=list[schemas.Event])
+def get_events(db: Session = Depends(get_db)):
+    return crud.get_events(db=db)
+
 # Crear un nuevo evento
-@router.post("/", response_model=schemas.Event)
+@router.post("/", response_model=schemas.Event, dependencies=[Depends(JWTBearer())])
 def create_event(event: schemas.EventCreate, db: Session = Depends(get_db)):
     new_event = crud.create_event(db=db, event=event)
     if not new_event:
@@ -21,13 +25,8 @@ def create_event(event: schemas.EventCreate, db: Session = Depends(get_db)):
         )
     return new_event
 
-# Obtener todos los eventos con paginación
-@router.get("/", response_model=list[schemas.Event])
-def get_events(db: Session = Depends(get_db)):
-    return crud.get_events(db=db)
-
 # Obtener un evento por ID
-@router.get("/{event_id}", response_model=schemas.Event)
+@router.get("/{event_id}", response_model=schemas.Event, dependencies=[Depends(JWTBearer())])
 def get_event(event_id: int, db: Session = Depends(get_db)):
     db_event = crud.get_event_by_id(db=db, event_id=event_id)
     if db_event is None:
@@ -35,7 +34,7 @@ def get_event(event_id: int, db: Session = Depends(get_db)):
     return db_event
 
 # Actualizar un evento por ID
-@router.put("/{event_id}", response_model=schemas.Event)
+@router.put("/{event_id}", response_model=schemas.Event, dependencies=[Depends(JWTBearer())])
 def update_event(event_id: int, event: schemas.EventCreate, db: Session = Depends(get_db)):
     db_event = crud.get_event_by_id(db=db, event_id=event_id)
     if db_event is None:
@@ -44,7 +43,7 @@ def update_event(event_id: int, event: schemas.EventCreate, db: Session = Depend
     return crud.update_event(db=db, event_id=event_id, event=event)
 
 # Eliminar un evento por ID
-@router.delete("/{event_id}", response_model=schemas.Event)
+@router.delete("/{event_id}", response_model=schemas.Event, dependencies=[Depends(JWTBearer())])
 def delete_event(event_id: int, db: Session = Depends(get_db)):
     db_event = crud.get_event_by_id(db=db, event_id=event_id)
     if db_event is None:
