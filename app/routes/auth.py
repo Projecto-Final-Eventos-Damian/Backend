@@ -11,6 +11,14 @@ from app.auth.auth_bearer import JWTBearer
 router = APIRouter(tags=["Auth"])
 pwd_context = CryptContext(schemes=["bcrypt"], deprecated="auto")
 
+@router.get("/user", response_model=schemas.User)
+def get_current_user(payload=Depends(JWTBearer()), db: Session = Depends(get_db)):
+    user_id = payload.get("sub")
+    user = db.query(User).filter(User.id == user_id).first()
+    if not user:
+        raise HTTPException(status_code=404, detail="User not found")
+    return user
+
 @router.post("/login")
 def login(credentials: schemas.UserLogin, db: Session = Depends(get_db)):
     user = db.query(User).filter(User.email == credentials.email).first()
