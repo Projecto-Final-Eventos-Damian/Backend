@@ -2,6 +2,8 @@ from fastapi import FastAPI, HTTPException
 from app.routes import users, categories, events, followers, ratings, reservations, tickets, ticketTypes, auth
 from fastapi.responses import JSONResponse
 from fastapi.middleware.cors import CORSMiddleware
+from fastapi.staticfiles import StaticFiles
+import os
 
 app = FastAPI(title="Gestión de Eventos")
 
@@ -39,3 +41,6 @@ app.include_router(reservations.router)
 app.include_router(tickets.router)
 app.include_router(ticketTypes.router)
 app.include_router(auth.router)
+
+
+app.mount("/public", StaticFiles(directory="public"), name="public")

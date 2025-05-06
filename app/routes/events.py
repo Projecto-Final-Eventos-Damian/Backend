@@ -1,8 +1,10 @@
-from fastapi import APIRouter, Depends, HTTPException
+from fastapi import APIRouter, Depends, HTTPException, UploadFile, File, Form
 from sqlalchemy.orm import Session
 from app import models, schemas, crud
 from app.database import get_db
 from app.auth.auth_bearer import JWTBearer
+from datetime import datetime
+import os, uuid, shutil
 
 router = APIRouter(
     prefix="/events",
@@ -16,8 +18,44 @@ def get_events(db: Session = Depends(get_db)):
 
 # Crear un nuevo evento
 @router.post("/", response_model=schemas.Event, dependencies=[Depends(JWTBearer())])
-def create_event(event: schemas.EventCreate, db: Session = Depends(get_db)):
-    new_event = crud.create_event(db=db, event=event)
+def create_event(
+    title: str = Form(...),
+    description: str = Form(None),
+    category_id: int = Form(...),
+    organizer_id: int = Form(...),
+    capacity: int = Form(...),
+    start_date_time: datetime = Form(...),
+    end_date_time: datetime = Form(...),
+    location: str = Form(...),
+    image: UploadFile = File(...),
+    db: Session = Depends(get_db)
+):
+    image_folder = "public/images/events"
+    os.makedirs(image_folder, exist_ok=True)
+
+    ext = os.path.splitext(image.filename)[1]
+    unique_filename = f"{uuid.uuid4().hex}{ext}"
+    image_path = os.path.join(image_folder, unique_filename)
+
+    with open(image_path, "wb") as buffer:
+        shutil.copyfileobj(image.file, buffer)
+
+    image_url = f"/{image_path}"
+
+    new_event = crud.create_event(
+        db=db,
+        event=schemas.EventCreate(
+            title=title,
+            description=description,
+            category_id=category_id,
+            organizer_id=organizer_id,
+            capacity=capacity,
+            start_date_time=start_date_time,
+            end_date_time=end_date_time,
+            location=location,
+            image_url=image_url
+        )
+    )
     if not new_event:
         raise HTTPException(
             status_code=400, 

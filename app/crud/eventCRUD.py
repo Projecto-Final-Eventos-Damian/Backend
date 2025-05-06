@@ -1,5 +1,6 @@
 from sqlalchemy.orm import Session
 from app import models, schemas
+import os
 
 def create_event(db: Session, event: schemas.EventCreate):
     organizer = db.query(models.User).filter(
@@ -52,6 +53,11 @@ def update_event(db: Session, event_id: int, event: schemas.EventCreate):
 def delete_event(db: Session, event_id: int):
     db_event = db.query(models.Event).filter(models.Event.id == event_id).first()
     if db_event:
+        if db_event.image_url:
+            image_path = db_event.image_url.lstrip("/")
+            if os.path.exists(image_path):
+                os.remove(image_path)
+
         db.delete(db_event)
         db.commit()
     return db_event
