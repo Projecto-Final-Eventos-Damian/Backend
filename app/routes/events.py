@@ -5,16 +5,23 @@ from app.database import get_db
 from app.auth.auth_bearer import JWTBearer
 from datetime import datetime
 import os, uuid, shutil
+from typing import List
 
 router = APIRouter(
     prefix="/events",
     tags=["events"],
 )
 
+ALLOWED_EXTENSIONS = {"jpg", "jpeg", "png"}
+
 # Listar todos los eventos
 @router.get("/", response_model=list[schemas.Event])
 def get_events(db: Session = Depends(get_db)):
     return crud.get_events(db=db)
+
+
+def allowed_file(filename: str) -> bool:
+    return '.' in filename and filename.rsplit('.', 1)[1].lower() in ALLOWED_EXTENSIONS
 
 # Crear un nuevo evento
 @router.post("/", response_model=schemas.Event, dependencies=[Depends(JWTBearer())])
@@ -30,6 +37,12 @@ def create_event(
     image: UploadFile = File(...),
     db: Session = Depends(get_db)
 ):
+    if not allowed_file(image.filename):
+        raise HTTPException(
+            status_code=400,
+            detail="El archivo debe ser una imagen con extensión .jpg, .jpeg o .png "
+        )
+
     image_folder = "public/images/events"
     os.makedirs(image_folder, exist_ok=True)
 
@@ -64,7 +77,7 @@ def create_event(
     return new_event
 
 # Obtener un evento por ID
-@router.get("/{event_id}", response_model=schemas.Event, dependencies=[Depends(JWTBearer())])
+@router.get("/{event_id}", response_model=schemas.Event)
 def get_event(event_id: int, db: Session = Depends(get_db)):
     db_event = crud.get_event_by_id(db=db, event_id=event_id)
     if db_event is None:

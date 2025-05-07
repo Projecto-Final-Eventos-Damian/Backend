@@ -6,12 +6,11 @@ from app.auth.auth_bearer import JWTBearer
 
 router = APIRouter(
     prefix="/followers",
-    tags=["followers"],
-    dependencies=[Depends(JWTBearer())]
+    tags=["followers"]
 )
 
 # Seguir a un organizador
-@router.post("/", response_model=schemas.UserFollower)
+@router.post("/", response_model=schemas.UserFollower, dependencies=[Depends(JWTBearer())])
 def follow_organizer(follower: schemas.UserFollowerCreate, db: Session = Depends(get_db)):
     new_follow = crud.follow_organizer(db, follower.user_id, follower.organizer_id)
     if not new_follow:
@@ -31,7 +30,7 @@ def get_following(user_id: int, db: Session = Depends(get_db)):
     return following
 
 # Dejar de seguir a un organizador
-@router.delete("/{user_id}/{organizer_id}", response_model=schemas.UserFollower)
+@router.delete("/{user_id}/{organizer_id}", response_model=schemas.UserFollower, dependencies=[Depends(JWTBearer())])
 def unfollow_organizer(user_id: int, organizer_id: int, db: Session = Depends(get_db)):
     follower = db.query(models.UserFollower).filter(
         models.UserFollower.user_id == user_id,
@@ -49,6 +48,6 @@ def unfollow_organizer(user_id: int, organizer_id: int, db: Session = Depends(ge
     return follower_data
 
 # Ver todas las relaciones de seguimiento
-@router.get("/", response_model=list[schemas.UserFollower])
+@router.get("/", response_model=list[schemas.UserFollower], dependencies=[Depends(JWTBearer())])
 def get_all_user_followers(db: Session = Depends(get_db)):
     return crud.get_all_user_followers(db)
