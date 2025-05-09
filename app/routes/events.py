@@ -34,26 +34,29 @@ def create_event(
     start_date_time: datetime = Form(...),
     end_date_time: datetime = Form(...),
     location: str = Form(...),
-    image: UploadFile = File(...),
+    image: UploadFile = File(None),
     db: Session = Depends(get_db)
 ):
-    if not allowed_file(image.filename):
-        raise HTTPException(
-            status_code=400,
-            detail="El archivo debe ser una imagen con extensión .jpg, .jpeg o .png "
-        )
+    image_url = None
 
-    image_folder = "public/images/events"
-    os.makedirs(image_folder, exist_ok=True)
+    if image:
+        if not allowed_file(image.filename):
+            raise HTTPException(
+                status_code=400,
+                detail="El archivo debe ser una imagen con extensión .jpg, .jpeg o .png"
+            )
 
-    ext = os.path.splitext(image.filename)[1]
-    unique_filename = f"{uuid.uuid4().hex}{ext}"
-    image_path = os.path.join(image_folder, unique_filename)
+        image_folder = "public/images/events"
+        os.makedirs(image_folder, exist_ok=True)
 
-    with open(image_path, "wb") as buffer:
-        shutil.copyfileobj(image.file, buffer)
+        ext = os.path.splitext(image.filename)[1]
+        unique_filename = f"{uuid.uuid4().hex}{ext}"
+        image_path = os.path.join(image_folder, unique_filename)
 
-    image_url = f"/{image_path}"
+        with open(image_path, "wb") as buffer:
+            shutil.copyfileobj(image.file, buffer)
+
+        image_url = f"/{image_path}"
 
     new_event = crud.create_event(
         db=db,
@@ -69,11 +72,13 @@ def create_event(
             image_url=image_url
         )
     )
+
     if not new_event:
         raise HTTPException(
-            status_code=400, 
+            status_code=400,
             detail="Solo los usuarios con rol de organizador pueden crear eventos"
         )
+
     return new_event
 
 # Obtener un evento por ID
