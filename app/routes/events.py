@@ -84,6 +84,14 @@ def get_event(event_id: int, db: Session = Depends(get_db)):
         raise HTTPException(status_code=404, detail="Event not found")
     return db_event
 
+# Obtener todos los eventos de un organizador
+@router.get("/organizer/{organizer_id}", response_model=List[schemas.Event])
+def get_events_by_organizer(organizer_id: int, db: Session = Depends(get_db)):
+    events = crud.get_events_by_organizer(db, organizer_id)
+    if not events:
+        raise HTTPException(status_code=404, detail="No se encontraron eventos para este organizador")
+    return events
+
 # Actualizar un evento por ID
 @router.put("/{event_id}", response_model=schemas.Event, dependencies=[Depends(JWTBearer())])
 def update_event(event_id: int, event: schemas.EventCreate, db: Session = Depends(get_db)):
