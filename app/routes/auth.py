@@ -25,7 +25,7 @@ def login(credentials: schemas.UserLogin, db: Session = Depends(get_db)):
     if not user or not pwd_context.verify(credentials.password, user.password_hash):
         raise HTTPException(status_code=401, detail="Invalid credentials")
 
-    token = create_access_token(data={"sub": str(user.id)})
+    token = create_access_token(data={"sub": str(user.id), "role": user.role})
     return {"token": token, "name": user.name, "email": user.email, "role": user.role}
 
 @router.post("/register")
@@ -43,7 +43,7 @@ def register(user_data: schemas.UserCreate, db: Session = Depends(get_db)):
     db.add(new_user)
     db.commit()
     db.refresh(new_user)
-    token = create_access_token(data={"sub": str(new_user.id)})
+    token = create_access_token(data={"sub": str(new_user.id), "role": new_user.role})
     return {"token": token, "name": new_user.name, "email": new_user.email, "role": new_user.role}
 
 @router.get("/private", dependencies=[Depends(JWTBearer())])

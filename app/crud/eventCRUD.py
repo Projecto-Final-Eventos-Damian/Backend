@@ -4,8 +4,7 @@ import os
 
 def create_event(db: Session, event: schemas.EventCreate):
     organizer = db.query(models.User).filter(
-        models.User.id == event.organizer_id,
-        models.User.role == "organizer"
+        models.User.id == event.organizer_id
     ).first()
 
     if not organizer:
