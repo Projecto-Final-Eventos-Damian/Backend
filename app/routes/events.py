@@ -38,6 +38,20 @@ def create_event(
     image: UploadFile = File(None),
     db: Session = Depends(get_db)
 ):
+    now = datetime.utcnow()
+
+    if start_date_time < now:
+        raise HTTPException(
+            status_code=400,
+            detail="La fecha de inicio no puede ser anterior a la fecha/hora actual"
+        )
+
+    if end_date_time <= start_date_time:
+        raise HTTPException(
+            status_code=400,
+            detail="La fecha de finalización debe ser posterior a la fecha/hora de inicio"
+        )
+
     image_url = None
 
     if image:
@@ -116,6 +130,20 @@ def update_event(
     db_event = crud.get_event_by_id(db=db, event_id=event_id)
     if db_event is None:
         raise HTTPException(status_code=404, detail="Event not found")
+
+    now = datetime.utcnow()
+
+    if start_date_time < now:
+        raise HTTPException(
+            status_code=400,
+            detail="La fecha de inicio no puede ser anterior a la fecha/hora actual"
+        )
+
+    if end_date_time <= start_date_time:
+        raise HTTPException(
+            status_code=400,
+            detail="La fecha de finalización debe ser posterior a la fecha/hora de inicio"
+        )
 
     image_url = db_event.image_url
 
