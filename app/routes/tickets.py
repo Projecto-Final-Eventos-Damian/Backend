@@ -25,6 +25,13 @@ def get_ticket(ticket_id: int, db: Session = Depends(get_db)):
         raise HTTPException(status_code=404, detail="Ticket not found")
     return ticket
 
+@router.get("/reservation/{reservation_id}", response_model=list[schemas.Ticket])
+def get_tickets_by_reservation_id(reservation_id: int, db: Session = Depends(get_db)):
+    tickets = crud.get_tickets_by_reservation_id(db, reservation_id)
+    if not tickets:
+        raise HTTPException(status_code=404, detail="No tickets found for this reservation")
+    return tickets
+
 @router.put("/{ticket_id}", response_model=schemas.Ticket)
 def update_ticket(ticket_id: int, status: schemas.TicketUpdate, db: Session = Depends(get_db)):
     updated = crud.update_ticket(db, ticket_id, status.status)

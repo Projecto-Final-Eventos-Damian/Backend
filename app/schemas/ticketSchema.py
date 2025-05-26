@@ -1,6 +1,6 @@
 from pydantic import BaseModel
 from datetime import datetime
-from app.schemas import Reservation, TicketType
+from .ticketTypeSchema import TicketType
 from enum import Enum
 
 class TicketStatus(str, Enum):
@@ -18,7 +18,7 @@ class TicketUpdate(BaseModel):
 
 class Ticket(BaseModel):
     id: int
-    reservation: Reservation
+    reservation_id: int
     ticket_type: TicketType
     ticket_code: str
     status: TicketStatus

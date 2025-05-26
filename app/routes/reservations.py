@@ -45,6 +45,19 @@ def get_all_reservations(db: Session = Depends(get_db)):
     db_reservations = crud.get_all_reservations(db=db)
     return db_reservations
 
+# Obtener reservas por user Id con sus tiquets
+@router.get("/user/{user_id}/tickets", response_model=list[schemas.ReservationWithTickets])
+def get_user_reservations_with_tickets(user_id: int, db: Session = Depends(get_db)):
+    db_reservations = crud.get_reservations_by_user(db, user_id)
+    result = []
+    for reservation in db_reservations:
+        tickets = crud.get_tickets_by_reservation_id(db, reservation.id)
+        result.append({
+            "reservation": reservation,
+            "tickets": tickets
+        })
+    return result
+
 # Obtener una reserva por su ID
 @router.get("/{reservation_id}", response_model=schemas.Reservation)
 def get_reservation(reservation_id: int, db: Session = Depends(get_db)):

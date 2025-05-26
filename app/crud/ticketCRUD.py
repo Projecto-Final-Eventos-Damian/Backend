@@ -28,6 +28,9 @@ def get_ticket_by_id(db: Session, ticket_id: int):
 def get_all_tickets(db: Session):
     return db.query(models.Ticket).all()
 
+def get_tickets_by_reservation_id(db: Session, reservation_id: int):
+    return db.query(models.Ticket).filter(models.Ticket.reservation_id == reservation_id).all()
+
 def update_ticket(db: Session, ticket_id: int, status: str):
     ticket = db.query(models.Ticket).filter(models.Ticket.id == ticket_id).first()
     if ticket:
