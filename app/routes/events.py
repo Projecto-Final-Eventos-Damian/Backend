@@ -133,12 +133,6 @@ def update_event(
 
     now = datetime.utcnow()
 
-    if start_date_time < now:
-        raise HTTPException(
-            status_code=400,
-            detail="La fecha de inicio no puede ser anterior a la fecha/hora actual"
-        )
-
     if end_date_time <= start_date_time:
         raise HTTPException(
             status_code=400,

@@ -1,14 +1,28 @@
 from sqlalchemy.orm import Session
 from app import models, schemas
+from sqlalchemy.exc import IntegrityError
 
 def follow_organizer(db: Session, user_id: int, organizer_id: int):
-    organizer = db.query(models.User).filter(models.User.id == organizer_id, models.User.role == "organizer").first()
+    if user_id == organizer_id:
+        raise ValueError("No puedes seguirte a ti mismo")
+
+    organizer = db.query(models.User).filter(
+        models.User.id == organizer_id,
+        models.User.role == "organizer"
+    ).first()
+
     if not organizer:
-        return None  
+        return None
 
     follower = models.UserFollower(user_id=user_id, organizer_id=organizer_id)
     db.add(follower)
-    db.commit()
+
+    try:
+        db.commit()
+    except IntegrityError:
+        db.rollback()
+        raise ValueError("Ya estás siguiendo a este organizador")
+
     db.refresh(follower)
     return follower
 

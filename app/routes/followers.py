@@ -12,7 +12,10 @@ router = APIRouter(
 # Seguir a un organizador
 @router.post("/", response_model=schemas.UserFollower, dependencies=[Depends(JWTBearer())])
 def follow_organizer(follower: schemas.UserFollowerCreate, db: Session = Depends(get_db)):
-    new_follow = crud.follow_organizer(db, follower.user_id, follower.organizer_id)
+    try:
+        new_follow = crud.follow_organizer(db, follower.user_id, follower.organizer_id)
+    except ValueError as e:
+        raise HTTPException(status_code=400, detail=str(e))
     if not new_follow:
         raise HTTPException(status_code=400, detail="El usuario seguido no es un organizador")
     return new_follow
@@ -51,3 +54,12 @@ def unfollow_organizer(user_id: int, organizer_id: int, db: Session = Depends(ge
 @router.get("/", response_model=list[schemas.UserFollower], dependencies=[Depends(JWTBearer())])
 def get_all_user_followers(db: Session = Depends(get_db)):
     return crud.get_all_user_followers(db)
+
+# Comprobar seguimiento de usuarios
+@router.get("/check/{user_id}/{organizer_id}")
+def check_follow(user_id: int, organizer_id: int, db: Session = Depends(get_db)):
+    follow = db.query(models.UserFollower).filter_by(
+        user_id=user_id,
+        organizer_id=organizer_id
+    ).first()
+    return {"is_following": bool(follow)}

@@ -3,9 +3,12 @@ from app.routes import users, categories, events, followers, ratings, reservatio
 from fastapi.responses import JSONResponse
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.staticfiles import StaticFiles
+from app.auth.token_refresh import TokenRefreshMiddleware
 import os
 
 app = FastAPI(title="Gestión de Eventos")
+
+app.add_middleware(TokenRefreshMiddleware)
 
 # Habilitar CORS en FastAPI
 app.add_middleware(
@@ -14,16 +17,15 @@ app.add_middleware(
     allow_credentials=True,
     allow_methods=["*"],
     allow_headers=["*"],
+    expose_headers=["x-new-token"],
 )
 
-# Manejador de excepciones generales (errores internos)
 @app.exception_handler(Exception)
 async def general_exception_handler(request, exc: Exception):
-    # Aquí puedes capturar más detalles del error
     return JSONResponse(
         status_code=500,
         content={
-            "message": str(exc),  # Mensaje del error
+            "message": str(exc),
         }
     )
 
@@ -31,7 +33,6 @@ async def general_exception_handler(request, exc: Exception):
 def read_root():
     return {"message": "Hello, this is EventMix Api!"}
 
-# Registrar las rutas de usuarios
 app.include_router(users.router)
 app.include_router(categories.router)
 app.include_router(events.router)

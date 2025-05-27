@@ -1,5 +1,5 @@
-from fastapi import Depends, HTTPException, status
-from app.auth.auth_bearer import JWTBearer
+from fastapi import Depends, HTTPException, status, Response, Request
+from .auth_bearer import JWTBearer
 
 def RoleChecker(allowed_roles: list[str]):
     if not allowed_roles:
