@@ -1,0 +1,28 @@
+<html>
+  <body style="font-family: Arial, sans-serif; background-color: #f9f9f9; padding: 20px;">
+    <div style="background-color: white; border-radius: 8px; padding: 20px; box-shadow: 0 2px 5px rgba(0,0,0,0.1);">
+      <h2 style="color: #333;">🎟️ Reserva Confirmada</h2>
+      <p>Hola <strong>{{ user_name }}</strong>,</p>
+      <p>Gracias por tu reserva para el evento:</p>
+      <h3 style="color: #007BFF;">{{ event_title }}</h3>
+      <p><strong>Fecha de la reserva:</strong> {{ reservation_date }}</p>
+      <p><strong>ID de la reserva:</strong> {{ reservation_id }}</p>
+      <h4>🎫 Tus tickets</h4>
+        <ul>
+        {% for ticket in tickets %}
+          <li>
+            Tipo: {{ ticket.ticket_type.name }}<br>
+            {% if ticket.ticket_type.description %}
+              Descripción: {{ ticket.ticket_type.description }}<br>
+            {% endif %}            
+            Precio: {{ ticket.ticket_type.price }}€<br>
+            Código: <strong>{{ ticket.ticket_code }}</strong><br>
+          </li>
+        {% endfor %}
+        </ul>
+      <p>Nos alegra contar contigo. ¡Nos vemos pronto!</p>
+      <hr style="margin: 20px 0;">
+      <small style="color: #888;">Este es un mensaje automático, por favor no respondas a este correo.</small>
+    </div>
+  </body>
+</html>

@@ -1,8 +1,9 @@
-from fastapi import APIRouter, Depends, HTTPException
+from fastapi import APIRouter, Depends, HTTPException, BackgroundTasks
 from sqlalchemy.orm import Session
 from app import models, schemas, crud
 from app.database import get_db
 from app.auth.auth_bearer import JWTBearer
+from app.utils.email import send_confirmation_email, render_email_template
 
 router = APIRouter(
     prefix="/reservations",
@@ -17,6 +18,39 @@ def create_reservation(reservation: schemas.ReservationCreate, db: Session = Dep
         return db_reservation
     except ValueError as e:
         raise HTTPException(status_code=400, detail=str(e))
+
+# Enviar email de confirmacion de reserva con tickets
+@router.post("/{reservation_id}/send-confirmation", dependencies=[Depends(JWTBearer())])
+def send_reservation_confirmation(
+    reservation_id: int,
+    background_tasks: BackgroundTasks,
+    db: Session = Depends(get_db)
+):
+    db_reservation = crud.get_reservation_by_id(db, reservation_id)
+    if not db_reservation:
+        raise HTTPException(status_code=404, detail="Reservation not found")
+
+    user = db_reservation.user
+    event = db_reservation.event
+    tickets = crud.get_tickets_by_reservation_id(db, db_reservation.id)
+
+    subject = f"Reserva confirmada para el evento {event.title}"
+
+    html = render_email_template(
+        "emails/reservation_conf.html",
+        {
+            "user_name": user.name,
+            "event_title": event.title,
+            "reservation_date": db_reservation.reserved_at.strftime('%d/%m/%Y'),
+            "reservation_id": db_reservation.id,
+            "tickets": tickets
+        }
+    )
+    plain_text = f"Hola {user.name}, tu reserva (ID: {db_reservation.id}) ha sido confirmada."
+
+    background_tasks.add_task(send_confirmation_email, user.email, subject, html, plain_text)
+    return {"message": "Confirmation email sent."}
+
 
 # Actualizar una reserva
 @router.put("/{reservation_id}", response_model=schemas.Reservation, dependencies=[Depends(JWTBearer())])
@@ -51,6 +85,19 @@ def get_all_reservations(db: Session = Depends(get_db)):
 @router.get("/user/{user_id}/tickets", response_model=list[schemas.ReservationWithTickets], dependencies=[Depends(JWTBearer())])
 def get_user_reservations_with_tickets(user_id: int, db: Session = Depends(get_db)):
     db_reservations = crud.get_reservations_by_user(db, user_id)
+    result = []
+    for reservation in db_reservations:
+        tickets = crud.get_tickets_by_reservation_id(db, reservation.id)
+        result.append({
+            "reservation": reservation,
+            "tickets": tickets
+        })
+    return result
+
+# Obtener reservas por event Id con sus tiquets
+@router.get("/event/{event_id}/tickets", response_model=list[schemas.ReservationWithTickets], dependencies=[Depends(JWTBearer())])
+def get_event_reservations_with_tickets(event_id: int, db: Session = Depends(get_db)):
+    db_reservations = crud.get_reservations_by_event(db, event_id)
     result = []
     for reservation in db_reservations:
         tickets = crud.get_tickets_by_reservation_id(db, reservation.id)
