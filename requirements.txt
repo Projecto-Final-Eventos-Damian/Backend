@@ -12,3 +12,6 @@ python-jose[cryptography]
 passlib[bcrypt]
 python-multipart
 Jinja2
+weasyprint
+qrcode
+pillow

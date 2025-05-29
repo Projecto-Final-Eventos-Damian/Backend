@@ -7,19 +7,6 @@
       <h3 style="color: #007BFF;">{{ event_title }}</h3>
       <p><strong>Fecha de la reserva:</strong> {{ reservation_date }}</p>
       <p><strong>ID de la reserva:</strong> {{ reservation_id }}</p>
-      <h4>🎫 Tus tickets</h4>
-        <ul>
-        {% for ticket in tickets %}
-          <li>
-            Tipo: {{ ticket.ticket_type.name }}<br>
-            {% if ticket.ticket_type.description %}
-              Descripción: {{ ticket.ticket_type.description }}<br>
-            {% endif %}            
-            Precio: {{ ticket.ticket_type.price }}€<br>
-            Código: <strong>{{ ticket.ticket_code }}</strong><br>
-          </li>
-        {% endfor %}
-        </ul>
       <p>Nos alegra contar contigo. ¡Nos vemos pronto!</p>
       <hr style="margin: 20px 0;">
       <small style="color: #888;">Este es un mensaje automático, por favor no respondas a este correo.</small>

@@ -3,7 +3,9 @@ from sqlalchemy.orm import Session
 from app import models, schemas, crud
 from app.database import get_db
 from app.auth.auth_bearer import JWTBearer
-from app.utils.email import send_confirmation_email, render_email_template
+from app.utils.email import send_confirmation_email_with_attachment, render_email_template
+from app.utils.pdf import generate_reservation_pdf
+from app.utils.qr import generate_qr_base64
 
 router = APIRouter(
     prefix="/reservations",
@@ -34,6 +36,9 @@ def send_reservation_confirmation(
     event = db_reservation.event
     tickets = crud.get_tickets_by_reservation_id(db, db_reservation.id)
 
+    for ticket in tickets:
+        ticket.qr_base64 = generate_qr_base64(ticket.ticket_code)
+
     subject = f"Reserva confirmada para el evento {event.title}"
 
     html = render_email_template(
@@ -46,9 +51,30 @@ def send_reservation_confirmation(
             "tickets": tickets
         }
     )
-    plain_text = f"Hola {user.name}, tu reserva (ID: {db_reservation.id}) ha sido confirmada."
 
-    background_tasks.add_task(send_confirmation_email, user.email, subject, html, plain_text)
+    pdf_bytes = generate_reservation_pdf({
+        "user_name": user.name,
+        "reservation_date": db_reservation.reserved_at.strftime('%d/%m/%Y'),
+        "reservation_id": db_reservation.id,
+        "tickets": tickets,
+        "event": {
+            "title": event.title,
+            "image_url": event.image_url,
+            "start_date": event.start_date_time.strftime('%d/%m/%Y - %H:%M'),
+            "end_date": event.end_date_time.strftime('%d/%m/%Y - %H:%M'),
+            "location": event.location
+        }
+    })
+
+    background_tasks.add_task(
+        send_confirmation_email_with_attachment,
+        user.email,
+        subject,
+        html,
+        pdf_bytes,
+        f"tickets_reserva_{db_reservation.id}.pdf"
+    )
+
     return {"message": "Confirmation email sent."}
 
 
