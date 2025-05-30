@@ -1,6 +1,7 @@
 from sqlalchemy.orm import Session
 from app import models, schemas
 import os
+from datetime import datetime
 
 def create_event(db: Session, event: schemas.EventCreate):
     organizer = db.query(models.User).filter(
@@ -29,6 +30,13 @@ def create_event(db: Session, event: schemas.EventCreate):
 
 def get_events(db: Session):
     return db.query(models.Event).all()
+
+def get_upcoming_events(db: Session, now: datetime):
+    return db.query(models.Event).filter(models.Event.end_date_time > now).all()
+
+def get_finished_events(db: Session):
+    now = datetime.utcnow()
+    return db.query(models.Event).filter(models.Event.end_date_time <= now, models.Event.feedback_email_sent == False).all()
 
 def get_event_by_id(db: Session, event_id: int):
     return db.query(models.Event).filter(models.Event.id == event_id).first()

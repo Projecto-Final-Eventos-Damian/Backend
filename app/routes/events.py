@@ -7,6 +7,7 @@ from app.auth.auth_dependencies import RoleChecker
 from datetime import datetime
 import os, uuid, shutil
 from typing import List
+from datetime import datetime
 
 router = APIRouter(
     prefix="/events",
@@ -20,6 +21,13 @@ ALLOWED_EXTENSIONS = {"jpg", "jpeg", "png"}
 def get_events(db: Session = Depends(get_db)):
     return crud.get_events(db=db)
 
+@router.get("/open", response_model=List[schemas.Event])
+def get_upcoming_events(db: Session = Depends(get_db)):
+    now = datetime.utcnow()
+    events = crud.get_upcoming_events(db=db, now=now)
+    if not events:
+        raise HTTPException(status_code=404, detail="No hay eventos próximos disponibles")
+    return events
 
 def allowed_file(filename: str) -> bool:
     return '.' in filename and filename.rsplit('.', 1)[1].lower() in ALLOWED_EXTENSIONS

@@ -2,6 +2,8 @@ import smtplib
 from email.message import EmailMessage
 from jinja2 import Environment, FileSystemLoader
 from dotenv import load_dotenv
+from app import models, schemas, crud
+from app.database import get_db
 import os
 
 load_dotenv()
@@ -16,19 +18,6 @@ jinja_env = Environment(loader=FileSystemLoader(TEMPLATES_DIR))
 def render_email_template(template_name: str, context: dict) -> str:
     template = jinja_env.get_template(template_name)
     return template.render(context)
-
-def send_confirmation_email(to_email: str, subject: str, html_content: str, plain_text: str = ""):
-    msg = EmailMessage()
-    msg["Subject"] = subject
-    msg["From"] = EMAIL_ADDRESS
-    msg["To"] = to_email
-
-    msg.add_alternative(html_content, subtype="html")
-
-    with smtplib.SMTP(EMAIL_HOST, EMAIL_PORT) as smtp:
-        smtp.starttls()
-        smtp.login(EMAIL_ADDRESS, EMAIL_PASSWORD)
-        smtp.send_message(msg)
 
 def send_confirmation_email_with_attachment(to_email, subject, html_content, pdf_bytes, filename):
     msg = EmailMessage()

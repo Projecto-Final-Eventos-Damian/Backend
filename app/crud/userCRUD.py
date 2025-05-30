@@ -28,6 +28,9 @@ def get_users(db: Session):
 def get_user_by_id(db: Session, user_id: int):
     return db.query(models.User).filter(models.User.id == user_id).first()
 
+def get_users_with_reservations(db: Session, event_id: int):
+    return db.query(models.User).join(models.Reservation).filter(models.Reservation.event_id == event_id).all()
+
 def update_user(db: Session, user_id: int, user: schemas.UserCreate):
     db_user = db.query(models.User).filter(models.User.id == user_id).first()
     if db_user:

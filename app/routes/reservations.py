@@ -6,6 +6,7 @@ from app.auth.auth_bearer import JWTBearer
 from app.utils.email import send_confirmation_email_with_attachment, render_email_template
 from app.utils.pdf import generate_reservation_pdf
 from app.utils.qr import generate_qr_base64
+from app.utils.files import encode_image_to_base64, get_event_image_path
 
 router = APIRouter(
     prefix="/reservations",
@@ -35,6 +36,9 @@ def send_reservation_confirmation(
     user = db_reservation.user
     event = db_reservation.event
     tickets = crud.get_tickets_by_reservation_id(db, db_reservation.id)
+    total_price = sum(ticket.ticket_type.price for ticket in tickets)
+    logo_icon_path = get_event_image_path("public/images/logo/logo-icon.png")
+    logo_text_path = get_event_image_path("public/images/logo/logo-text.png")
 
     for ticket in tickets:
         ticket.qr_base64 = generate_qr_base64(ticket.ticket_code)
@@ -48,7 +52,7 @@ def send_reservation_confirmation(
             "event_title": event.title,
             "reservation_date": db_reservation.reserved_at.strftime('%d/%m/%Y'),
             "reservation_id": db_reservation.id,
-            "tickets": tickets
+            "total_price": total_price
         }
     )
 
@@ -57,6 +61,8 @@ def send_reservation_confirmation(
         "reservation_date": db_reservation.reserved_at.strftime('%d/%m/%Y'),
         "reservation_id": db_reservation.id,
         "tickets": tickets,
+        "logo_icon_base64": encode_image_to_base64(logo_icon_path),
+        "logo_text_base64": encode_image_to_base64(logo_text_path),
         "event": {
             "title": event.title,
             "image_url": event.image_url,
