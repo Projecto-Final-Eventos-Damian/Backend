@@ -1,5 +1,6 @@
 from fastapi import APIRouter, Depends, HTTPException
 from sqlalchemy.orm import Session
+from sqlalchemy.exc import IntegrityError
 from app import models, schemas, crud
 from app.database import get_db
 from app.auth.auth_bearer import JWTBearer
@@ -13,8 +14,15 @@ router = APIRouter(
 # Crear una nueva valoración
 @router.post("/", response_model=schemas.EventRating)
 def create_rating(rating: schemas.EventRatingCreate, db: Session = Depends(get_db)):
-    new_rating = crud.create_rating(db=db, rating=rating)
-    return new_rating
+    try:
+        new_rating = crud.create_rating(db=db, rating=rating)
+        return new_rating
+    except IntegrityError:
+        db.rollback()
+        raise HTTPException(
+            status_code=400,
+            detail="Ya has valorado este evento anteriormente."
+        )
 
 # Obtener todas las valoraciones
 @router.get("/", response_model=list[schemas.EventRating])

@@ -43,6 +43,7 @@ CREATE TABLE IF NOT EXISTS reservations (
     status ENUM('pending', 'confirmed', 'cancelled') DEFAULT 'pending',
     tickets_number INT NOT NULL,
     reserved_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    rating_sent BOOLEAN DEFAULT FALSE,
     FOREIGN KEY (user_id) REFERENCES users(id),
     FOREIGN KEY (event_id) REFERENCES events(id)
 );

@@ -83,7 +83,6 @@ def send_reservation_confirmation(
 
     return {"message": "Confirmation email sent."}
 
-
 # Actualizar una reserva
 @router.put("/{reservation_id}", response_model=schemas.Reservation, dependencies=[Depends(JWTBearer())])
 def update_reservation(reservation_id: int, reservation: schemas.ReservationUpdate, db: Session = Depends(get_db)):

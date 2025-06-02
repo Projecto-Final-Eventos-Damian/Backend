@@ -4,9 +4,14 @@ from fastapi.responses import JSONResponse
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.staticfiles import StaticFiles
 from app.auth.token_refresh import TokenRefreshMiddleware
+from app.tasks.scheduler import start_scheduler
 import os
 
 app = FastAPI(title="Gestión de Eventos")
+
+@app.on_event("startup")
+def startup_event():
+    start_scheduler()
 
 app.add_middleware(TokenRefreshMiddleware)
 
