@@ -14,6 +14,20 @@ router = APIRouter(
 # Crear una nueva valoración
 @router.post("/", response_model=schemas.EventRating)
 def create_rating(rating: schemas.EventRatingCreate, db: Session = Depends(get_db)):
+    event = db.query(models.Event).filter(models.Event.id == rating.event_id).first()
+    if not event:
+        raise HTTPException(status_code=404, detail="El evento no existe")
+
+    if event.organizer_id == rating.user_id:
+        raise HTTPException(status_code=403, detail="No puedes valorar tu propio evento")
+
+    reservation = db.query(models.Reservation).filter_by(
+        user_id=rating.user_id,
+        event_id=rating.event_id
+    ).first()
+    if not reservation:
+        raise HTTPException(status_code=403, detail="Debes tener una reserva para valorar este evento")
+
     try:
         new_rating = crud.create_rating(db=db, rating=rating)
         return new_rating
