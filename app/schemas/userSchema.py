@@ -1,4 +1,5 @@
 from pydantic import BaseModel, EmailStr
+from typing import Optional
 from datetime import datetime
 from enum import Enum
 
@@ -14,6 +15,7 @@ class UserCreate(BaseModel):
     email: EmailStr
     password: str
     role: UserRole = UserRole.user  # Por defecto, el rol es "user"
+    image_url: Optional[str] = None
 
 class UserLogin(BaseModel):
     email: EmailStr
@@ -25,6 +27,7 @@ class User(BaseModel):
     name: str
     email: EmailStr
     role: UserRole
+    image_url: Optional[str] = None
 
     class Config:
-        from_attributes = True  # Esto permite que el modelo ORM de SQLAlchemy sea convertido a dict para respuestas
+        from_attributes = True# Esto permite que el modelo ORM de SQLAlchemy sea convertido a dict para respuestas

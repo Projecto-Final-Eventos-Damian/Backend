@@ -11,6 +11,7 @@ class User(Base):
     email = Column(String(150), unique=True, nullable=False)
     password_hash = Column(String(255), nullable=False)
     role = Column(Enum("user", "organizer", "admin", name="user_roles"), default="user")
+    image_url = Column(String, nullable=True)
     created_at = Column(TIMESTAMP, server_default=func.current_timestamp())
 
     events = relationship("Event", back_populates="organizer")
