@@ -7,6 +7,8 @@ from app.utils.email import send_confirmation_email_with_attachment, render_emai
 from app.utils.pdf import generate_reservation_pdf
 from app.utils.qr import generate_qr_base64
 from app.utils.files import encode_image_to_base64, get_event_image_path
+from fastapi.responses import StreamingResponse
+from io import BytesIO
 
 router = APIRouter(
     prefix="/reservations",
@@ -82,6 +84,44 @@ def send_reservation_confirmation(
     )
 
     return {"message": "Confirmation email sent."}
+
+#Generar pdf de las entradas en el front
+@router.get("/{reservation_id}/pdf", dependencies=[Depends(JWTBearer())])
+def get_reservation_pdf(
+    reservation_id: int,
+    db: Session = Depends(get_db)
+):
+    db_reservation = crud.get_reservation_by_id(db, reservation_id)
+    if not db_reservation:
+        raise HTTPException(status_code=404, detail="Reservation not found")
+
+    user = db_reservation.user
+    event = db_reservation.event
+    tickets = crud.get_tickets_by_reservation_id(db, db_reservation.id)
+
+    for ticket in tickets:
+        ticket.qr_base64 = generate_qr_base64(ticket.ticket_code)
+
+    logo_icon_path = get_event_image_path("public/images/logo/logo-icon.png")
+    logo_text_path = get_event_image_path("public/images/logo/logo-text.png")
+
+    pdf_bytes = generate_reservation_pdf({
+        "user_name": user.name,
+        "reservation_date": db_reservation.reserved_at.strftime('%d/%m/%Y'),
+        "reservation_id": db_reservation.id,
+        "tickets": tickets,
+        "logo_icon_base64": encode_image_to_base64(logo_icon_path),
+        "logo_text_base64": encode_image_to_base64(logo_text_path),
+        "event": {
+            "title": event.title,
+            "image_url": event.image_url,
+            "start_date": event.start_date_time.strftime('%d/%m/%Y - %H:%M'),
+            "end_date": event.end_date_time.strftime('%d/%m/%Y - %H:%M'),
+            "location": event.location
+        }
+    })
+
+    return StreamingResponse(BytesIO(pdf_bytes), media_type="application/pdf")
 
 # Actualizar una reserva
 @router.put("/{reservation_id}", response_model=schemas.Reservation, dependencies=[Depends(JWTBearer())])
