@@ -3,7 +3,7 @@ from sqlalchemy.orm import Session
 from app import models, schemas, crud
 from app.database import get_db
 from app.auth.auth_bearer import JWTBearer
-from app.utils.email import send_confirmation_email_with_attachment, render_email_template
+from app.utils.email import send_confirmation_email_with_attachment, render_email_template, send_event_cancellation_email
 from app.utils.pdf import generate_reservation_pdf
 from app.utils.qr import generate_qr_base64
 from app.utils.files import encode_image_to_base64, get_event_image_path
@@ -122,6 +122,34 @@ def get_reservation_pdf(
     })
 
     return StreamingResponse(BytesIO(pdf_bytes), media_type="application/pdf")
+
+#Enviar correo de cancelación de evento
+@router.post("/event/{event_id}/notify-cancellation", dependencies=[Depends(JWTBearer())])
+def notify_event_cancellation(
+    event_id: int,
+    background_tasks: BackgroundTasks,
+    db: Session = Depends(get_db)
+):
+    db_event = crud.get_event_by_id(db, event_id)
+    if not db_event:
+        raise HTTPException(status_code=404, detail="Event not found")
+
+    reservations = crud.get_reservations_by_event(db, event_id)
+
+    if not reservations:
+        return {"message": "No reservations found for this event."}
+
+    for reservation in reservations:
+        user = reservation.user
+        background_tasks.add_task(
+            send_event_cancellation_email,
+            user.email,
+            user.name,
+            db_event.title
+        )
+
+    return {"message": "Cancellation emails scheduled."}
+
 
 # Actualizar una reserva
 @router.put("/{reservation_id}", response_model=schemas.Reservation, dependencies=[Depends(JWTBearer())])

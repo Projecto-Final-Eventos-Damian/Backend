@@ -49,7 +49,7 @@ def send_rating_emails(db: Session, base_frontend_url: str):
         if event.end_date_time <= datetime.now() and not reservation.rating_sent:
             user = reservation.user
 
-            rating_url = f"{base_frontend_url}/encuesta/{reservation.id}"
+            rating_url = f"{base_frontend_url}/event/{event.id}/create/{reservation.id}"
 
             html = render_email_template(
                 "emails/event_rating.html",
@@ -73,5 +73,51 @@ def send_rating_emails(db: Session, base_frontend_url: str):
 
             reservation.rating_sent = True
             db.add(reservation)
+            print(f"Generando enlace para {user.email}: {rating_url}")
 
     db.commit()
+
+def send_event_cancellation_email(user_email, user_name, event_title):
+    subject = f"Cancelación del evento {event_title}"
+
+    html = render_email_template(
+        "emails/event_cancellation.html",
+        {
+            "user_name": user_name,
+            "event_title": event_title
+        }
+    )
+
+    msg = EmailMessage()
+    msg["Subject"] = subject
+    msg["From"] = EMAIL_ADDRESS
+    msg["To"] = user_email
+    msg.add_alternative(html, subtype="html")
+
+    with smtplib.SMTP(EMAIL_HOST, EMAIL_PORT) as smtp:
+        smtp.starttls()
+        smtp.login(EMAIL_ADDRESS, EMAIL_PASSWORD)
+        smtp.send_message(msg)
+
+def send_new_event_email(to_email, organizer_name, event_title, event_url):
+    subject = f"Nuevo evento de {organizer_name}: {event_title}"
+
+    html = render_email_template(
+        "emails/new_event_notification.html",
+        {
+            "organizer_name": organizer_name,
+            "event_title": event_title,
+            "event_url": event_url
+        }
+    )
+
+    msg = EmailMessage()
+    msg["Subject"] = subject
+    msg["From"] = EMAIL_ADDRESS
+    msg["To"] = to_email
+    msg.add_alternative(html, subtype="html")
+
+    with smtplib.SMTP(EMAIL_HOST, EMAIL_PORT) as smtp:
+        smtp.starttls()
+        smtp.login(EMAIL_ADDRESS, EMAIL_PASSWORD)
+        smtp.send_message(msg)

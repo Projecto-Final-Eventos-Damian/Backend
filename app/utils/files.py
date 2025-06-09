@@ -3,6 +3,8 @@ import base64
 
 def get_event_image_path(image_url: str) -> str:
     project_root = os.path.abspath(os.path.join(os.path.dirname(__file__), "..", ".."))
+    if not image_url:
+        image_url = "public/images/events/default_event.png"
     image_path = os.path.join(project_root, image_url.lstrip("/"))
     return image_path
 

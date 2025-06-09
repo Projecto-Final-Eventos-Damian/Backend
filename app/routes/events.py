@@ -1,18 +1,24 @@
-from fastapi import APIRouter, Depends, HTTPException, UploadFile, File, Form
+from fastapi import APIRouter, Depends, HTTPException, UploadFile, File, Form, BackgroundTasks
 from sqlalchemy.orm import Session
 from app import models, schemas, crud
 from app.database import get_db
 from app.auth.auth_bearer import JWTBearer
 from app.auth.auth_dependencies import RoleChecker
+from app.utils.email import send_new_event_email
 from datetime import datetime
 import os, uuid, shutil
 from typing import List
 from datetime import datetime
+from dotenv import load_dotenv
 
 router = APIRouter(
     prefix="/events",
     tags=["events"],
 )
+
+load_dotenv()
+
+FRONTEND_URL = os.getenv("FRONTEND_URL")
 
 ALLOWED_EXTENSIONS = {"jpg", "jpeg", "png"}
 
@@ -35,6 +41,7 @@ def allowed_file(filename: str) -> bool:
 # Crear un nuevo evento
 @router.post("/", response_model=schemas.Event, dependencies=[Depends(RoleChecker(["organizer"]))])
 def create_event(
+    background_tasks: BackgroundTasks,
     title: str = Form(...),
     description: str = Form(None),
     category_id: int = Form(...),
@@ -100,6 +107,18 @@ def create_event(
         raise HTTPException(
             status_code=404,
             detail="No se pudo crear el evento"
+        )
+
+    followers = crud.get_followers(db, organizer_id)
+
+    for follower in followers:
+        event_url = FRONTEND_URL+f"/event/{new_event.id}"
+        background_tasks.add_task(
+            send_new_event_email,
+            follower.email,
+            new_event.organizer.name,
+            new_event.title,
+            event_url
         )
 
     return new_event

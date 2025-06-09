@@ -46,7 +46,7 @@ CREATE TABLE IF NOT EXISTS reservations (
     reserved_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     rating_sent BOOLEAN DEFAULT FALSE,
     FOREIGN KEY (user_id) REFERENCES users(id),
-    FOREIGN KEY (event_id) REFERENCES events(id)
+    FOREIGN KEY (event_id) REFERENCES events(id) ON DELETE CASCADE
 );
 
 CREATE TABLE IF NOT EXISTS ticket_types (

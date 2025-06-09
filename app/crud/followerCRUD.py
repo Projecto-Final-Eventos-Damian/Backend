@@ -50,5 +50,4 @@ def unfollow_organizer(db: Session, user_id: int, organizer_id: int):
     return follower
 
 def get_all_user_followers(db: Session):
-    # Devuelve todas las relaciones de seguidores en la base de datos
     return db.query(models.UserFollower).all()
