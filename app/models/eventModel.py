@@ -20,6 +20,6 @@ class Event(Base):
 
     category = relationship("Category", back_populates="events")
     organizer = relationship("User", back_populates="events")
-    ratings = relationship("EventRating", back_populates="event")
+    ratings = relationship("EventRating", back_populates="event", cascade="all, delete-orphan")
     reservations = relationship("Reservation", back_populates="event", cascade="all, delete-orphan")
     ticket_types = relationship("TicketType", back_populates="event", cascade="all, delete-orphan")

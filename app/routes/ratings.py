@@ -4,6 +4,7 @@ from sqlalchemy.exc import IntegrityError
 from app import models, schemas, crud
 from app.database import get_db
 from app.auth.auth_bearer import JWTBearer
+from datetime import datetime
 
 router = APIRouter(
     prefix="/ratings",
@@ -17,6 +18,9 @@ def create_rating(rating: schemas.EventRatingCreate, db: Session = Depends(get_d
     event = db.query(models.Event).filter(models.Event.id == rating.event_id).first()
     if not event:
         raise HTTPException(status_code=404, detail="El evento no existe")
+
+    if datetime.now() < event.end_date_time:
+        raise HTTPException(status_code=403, detail="No puedes valorar un evento que aún no ha finalizado")
 
     if event.organizer_id == rating.user_id:
         raise HTTPException(status_code=403, detail="No puedes valorar tu propio evento")

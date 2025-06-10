@@ -15,7 +15,7 @@ EMAIL_HOST = "smtp.gmail.com"
 EMAIL_PORT = 587
 
 TEMPLATES_DIR = os.path.join(os.path.dirname(__file__), "..", "templates")
-jinja_env = Environment(loader=FileSystemLoader(TEMPLATES_DIR))
+jinja_env = Environment(loader=FileSystemLoader(TEMPLATES_DIR), cache_size=0)
 
 def render_email_template(template_name: str, context: dict) -> str:
     template = jinja_env.get_template(template_name)
@@ -49,7 +49,7 @@ def send_rating_emails(db: Session, base_frontend_url: str):
         if event.end_date_time <= datetime.now() and not reservation.rating_sent:
             user = reservation.user
 
-            rating_url = f"{base_frontend_url}/event/{event.id}/create/{reservation.id}"
+            rating_url = f"{base_frontend_url}/event/{event.id}/create/rating"
 
             html = render_email_template(
                 "emails/event_rating.html",
