@@ -115,19 +115,3 @@ INSERT INTO users (id, name, email, password_hash, role) VALUES
 INSERT INTO categories (id, name, description) VALUES
 (1, 'Fiesta', NULL),
 (2, 'Deporte', 'ejercicios al aire libre');
-
--- Evento
-INSERT INTO events (
-    title, description, category_id, organizer_id, capacity,
-    start_date_time, end_date_time, location, image_url
-) VALUES (
-    'Fiesta en Alcoy',
-    'Fiesta temática en Alcoy sobre moros y cristianos',
-    1,
-    1,
-    100,
-    '2025-04-04 16:22:22',
-    '2025-04-04 23:22:22',
-    'Alcoy',
-    'https://example.com/'
-);
