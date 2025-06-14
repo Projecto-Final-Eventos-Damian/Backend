@@ -4,3 +4,8 @@ __pycache__/
 *.png
 *.jpg
 *.jpeg
+
+!default_event.png
+!logo-icon.png
+!logo-text.png
+!default.png
