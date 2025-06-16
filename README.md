@@ -20,7 +20,13 @@ git clone https://github.com/Projecto-Final-Eventos-Damian/Backend.git
 cd Backend
 ```
 
-### Paso 3: Construir y levantar los contenedores con Docker Compose
+### Paso 3: añadir el .envDev a un .env
+
+```bash
+cp .envDev .env
+```
+
+### Paso 4: Construir y levantar los contenedores con Docker Compose
 
 ```bash
 docker-compose up --build
